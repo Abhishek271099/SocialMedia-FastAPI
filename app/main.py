@@ -1,0 +1,50 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional, List
+import time
+from .routers import post, user, auth, vote
+from . import models
+from .database import engine
+from .config import settings
+
+
+# models.Base.metadata.create_all(bind=engine)   # Alembic Replaced it
+app = FastAPI()
+
+# origins = ["https://www.google.com",
+#            "https://www.youtube.com"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+# my_posts = [{"title": "title of post 1", "content": "content of post 1", "id": 1}, {"title": "favorite foods", "content": "I like pizza", "id": 2}]
+
+
+# def find_post(id):
+#     for p in my_posts:
+#         if p["id"] == id:
+#             return p
+#     return None
+
+# def find_index_post(id):
+#     for i, p in enumerate(my_posts):
+#         if p["id"] == id:
+#             return i
+#     return None
+
+app.include_router(post.router)
+app.include_router(user.router)
+app.include_router(auth.router)
+app.include_router(vote.router)
+
+@app.get("/")
+def root():
+    return {"message": "Hello World!"}
+
+
+
+
+
