@@ -1,0 +1,36 @@
+version: '3'
+services:
+  api:
+    build: .
+    depends_on:
+      - postgres
+    ports: 
+      # - <port on localhost>:<port on container> transfer from localhost port to container port
+      - 8080:8000
+    # volumes:
+    #   - ./:/usr/src/app:ro    # syncing current folder in docker container, so that when we make any changes in current folder, it reflects in docker container
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000   # overwriting Dockerfile
+    # env_file:
+    #   - ./.env
+    environment:
+      # - DATABASE_HOSTNAME = localhost
+      - DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    
+    volumes:                # Save the data when container is down
+      - postgres-db:/var/lib/postgresql/data    # path in the container
+
+volumes:
+  postgres-db:
